@@ -44,6 +44,11 @@ public class FallenLogGenerator extends Generator {
     }
 
     private static void placeFallenLogAt(LevelAccessor level, BlockPos pos) {
+        // Shift position down if there is a water source block below the original pos (y-1)
+        if (level.getBlockState(pos.below()).is(Blocks.WATER)) {
+            pos = pos.below();
+        }
+        
         placeFallenLogAt(level, pos, getLogBlockForPos(level, pos));
     }
 
@@ -114,6 +119,7 @@ public class FallenLogGenerator extends Generator {
             BlockPos testPos = pos.relative(dir, i);
             BlockState testState = level.getBlockState(testPos);
 
+            // Water returns true for canBeReplaced(), so logs can now occupy the water block
             if (!testState.isAir() && !testState.canBeReplaced() && !testState.is(BlockTags.FLOWERS)) {
                 return false;
             }
